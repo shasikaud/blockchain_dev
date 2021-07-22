@@ -88,6 +88,12 @@ ERC 721’s are secured with the Ethereum blockchain, so can be used to tokenize
 [ERC 721](https://moonbase-blockscout.testnet.moonbeam.network/tokens/0x0a91e303B268776e9ECC3C1f2596C5Ab78EEDe9E/token-transfers)
 
 ---
+## Binance Smart Chain
+
+[ERC 20](https://testnet.bscscan.com/token/0x2442d9d714170d874d68d03de611fa9bfbbce9b8)
+
+[ERC 721](https://testnet.bscscan.com/token/0x0a91e303b268776e9ecc3c1f2596c5ab78eede9e)
+
 
 
 
