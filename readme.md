@@ -94,6 +94,12 @@ ERC 721’s are secured with the Ethereum blockchain, so can be used to tokenize
 
 [ERC 721](https://testnet.bscscan.com/token/0x0a91e303b268776e9ecc3c1f2596c5ab78eede9e)
 
+---
+---
+## NFT Marketplaces
+
+### [Opensea](https://opensea.io/assets/0x495f947276749ce646f68ac8c248420045cb7b5e/2721230383210040596147400622147439630259395529194514322415594716975954132993)
+
 
 
 
