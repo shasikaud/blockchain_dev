@@ -100,6 +100,12 @@ ERC 721’s are secured with the Ethereum blockchain, so can be used to tokenize
 
 ### [Opensea](https://opensea.io/assets/0x495f947276749ce646f68ac8c248420045cb7b5e/2721230383210040596147400622147439630259395529194514322415594716975954132993)
 
+### [Polkadot](https://market.xno.live)
+
+### [Stellar](https://stellarnft.com)
+
+### [Tron](https://nftone.net/?page=1)
+
 
 
 
