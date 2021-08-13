@@ -1,4 +1,4 @@
-// 2021-08-13 02:00 AM (UTC
+// SPDX-License-Identifier: MIT
 pragma solidity ^0.8.2;
 
 contract MultiSigWallet {
@@ -35,6 +35,9 @@ contract MultiSigWallet {
         uint numConfirmations;
     }
     
+    //store transactions and their confirmations
+    mapping(uint => mapping(address => bool)) public isConfirmed;
+    
     Transaction[] public transactions;
     
     /***/
@@ -45,7 +48,7 @@ contract MultiSigWallet {
         
         //initializing the owners
         for (uint i=0; i<_owners.length; i++){
-            address owner = _owner[i];
+            address owner = _owners[i];
             require(owner != address(0), "Invalid Owner");
             require(!isOwner[owner], "Owner not unique");
             isOwner[owner] = true;
@@ -63,6 +66,7 @@ contract MultiSigWallet {
     
     function submitTransaction(address _to, uint _value, bytes memory _data) public onlyOwner {
         uint txIndex = transactions.length; //transactions counter
+        
         transactions.push(Transaction({
             to: _to,
             value: _value,
@@ -86,7 +90,7 @@ contract MultiSigWallet {
     }
     
      modifier notConfirmed(uint _txIndex){
-        require (!transactions[_txIndex].isConfirmed[msg.sender], "Tx already confirmed);
+        require (!transactions[_txIndex].isConfirmed[msg.sender], "Tx already confirmed");
         _;
     }
     
@@ -94,12 +98,26 @@ contract MultiSigWallet {
         Transaction storage transaction = transactions[_txIndex]; //retrieve and store the transaction in var transaction locally
         transaction.isConfirmed[msg.sender] = true;
         transaction.numConfirmations += 1;
+        isConfirmed[_txIndex][msg.sender] = true;
         
         emit ConfirmTransaction(msg.sender, _txIndex);
     }
     
-    function executeTransaction() {}
+    function executeTransaction(uint _txIndex) public onlyOwner txExists(_txIndex) notExecuted(_txIndex) {
+        Transaction storage transaction = transactions[_txIndex]; //retrieve and store the transaction in var transaction locally
+        require(
+            transaction.numConfirmations >= numConfirmationsRequired, "Can not execute Tx, confirmations are not enough"  
+        );
+        transaction.executed = true;
+        (bool success, ) = transaction.to.call.value(transaction.value)(transaction.data);   //execute the transaction
+        require (success, "Tx execution failed");
+    }
     
-    function revokeConfirmation() {}
+    function revokeConfirmation(uint _txIndex) public onlyOwner txExists(_txIndex) notExecuted(_txIndex) {
+        Transaction storage transaction = transactions[_txIndex];
+        require (isConfirmed[_txIndex][msg.sender], "Cannot revoke, Tx not confirmed");
+        transaction.numConfirmations -= 1;
+        isConfirmed[_txIndex][msg.sender] = false;
+    }
     
 }
