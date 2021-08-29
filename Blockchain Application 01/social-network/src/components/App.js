@@ -45,6 +45,15 @@ class App extends Component {
       const postCount = await socialNetwork.methods.postCount().call()   //add .call() at the end to call 
       this.setState({postCount})
       //console.log(postCount)
+
+      //load posts
+      for (var i = 1; i <= postCount; i++) {
+        const post = await socialNetwork.methods.posts(i).call()
+        this.setState({
+          posts: [...this.state.posts, post]  //sort of like array append
+        })
+      }
+      //console.log({posts: this.state.posts})
     } else{
       window.alert("CONTRACT NOT DEPLOYED TO THE NETWORK")
     }
@@ -59,7 +68,8 @@ class App extends Component {
     this.state = {
       account: '',
       socialNetwork: null,
-      postCount:0
+      postCount:0,
+      posts: []
     }
   }
 
@@ -72,27 +82,25 @@ class App extends Component {
 
         <div className="container-fluid mt-5">
           <div className="row">
-            <main role="main" className="col-lg-12 d-flex text-center">
+            <main role="main" className="col-lg-12 ml-auto mr-auto" style={{ maxWidth: '500px'}}>
               <div className="content mr-auto ml-auto">
-                <a
-                  href="http://www.dappuniversity.com/bootcamp"
-                  target="_blank"
-                  rel="noopener noreferrer"
-                >
-                  <img src={logo} className="App-logo" alt="logo" />
-                </a>
-                <h1>Dapp University Starter Kit</h1>
-                <p>
-                  Edit <code>src/components/App.js</code> and save to reload.
-                </p>
-                <a
-                  className="App-link"
-                  href="http://www.dappuniversity.com/bootcamp"
-                  target="_blank"
-                  rel="noopener noreferrer"
-                >
-                  LEARN BLOCKCHAIN <u><b>NOW! </b></u>
-                </a>
+                { this.state.posts.map((post,key) => {
+                  return (
+                    <div className="card mb-4" key={key} >
+                      <div className="card-header">
+                        <small className="text-muted">{post.author}r</small>
+                      </div>
+                      <ul id="postList" className="list-group list-group-flush">
+                        <li className="list-group-item">
+                          <p>{post.content}</p>
+                        </li>
+                        <li key={key} className="list-group-item py-2">
+                          <p>TIPS HERE</p>
+                        </li>
+                      </ul>
+                    </div>
+                  )
+                })}
               </div>
             </main>
           </div>
