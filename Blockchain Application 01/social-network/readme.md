@@ -1,0 +1,1 @@
+migrate to truffe -> truffle migrate --reset  (puts a new copy of the smart contract on the blockchain)
