@@ -1,5 +1,5 @@
 import React, { Component } from 'react';
-import Identicon from  from 'identicon.js';
+import Identicon from 'identicon.js';
 
 class Navbar extends Component {
 

@@ -2,6 +2,8 @@ import React, { Component } from 'react';
 import Web3 from 'web3';
 import logo from '../logo.png';
 import './App.css';
+import SocialNetwork from '../abis/SocialNetwork.json';
+import Navbar from './Navbar';
 
 class App extends Component {
 
@@ -29,36 +31,45 @@ class App extends Component {
     const web3 = window.web3
     //load account
     const accounts = await web3.eth.getAccounts()
-    console.log(accounts)
+    //console.log(accounts)
     this.setState({account: accounts[0]})
+
+    //connect to instance of the contract
+    const networkId = await web3.eth.net.getId()
+    //console.log(networkId)
+    const networkData = SocialNetwork.networks[networkId]
+    if (networkData) {
+      const socialNetwork = web3.eth.Contract(SocialNetwork.abi, networkData.address)
+      //create a copy of the contract instance as a state
+      this.setState({socialNetwork})  //if key and value are same, no need to socialNetwork:socialNetwork
+      const postCount = await socialNetwork.methods.postCount().call()   //add .call() at the end to call 
+      this.setState({postCount})
+      //console.log(postCount)
+    } else{
+      window.alert("CONTRACT NOT DEPLOYED TO THE NETWORK")
+    }
   }
+
+
+  //call methods -> read info from the network | doesnt cost GAS
+  //write methods -> write into network | costs GAS
 
   constructor(props) {
     super(props)
     this.state = {
-      account: ''
+      account: '',
+      socialNetwork: null,
+      postCount:0
     }
   }
 
   render() {
     return (
       <div>
-        <nav className="navbar navbar-dark fixed-top bg-dark flex-md-nowrap p-0 shadow">
-          <a
-            className="navbar-brand col-sm-3 col-md-2 mr-0"
-            href="http://www.dappuniversity.com/bootcamp"
-            target="_blank"
-            rel="noopener noreferrer"
-          >
-            Navigation Bar
-          </a>
-          <li className="nav-item text-nowrap d-sm-none d-sm-block">
-            <small className="text-secondary">
-              <small id="account">{this.state.account}</small>
-            </small>
-          </li>
+        
+        <Navbar account={this.state.account}/>
 
-        </nav>
+
         <div className="container-fluid mt-5">
           <div className="row">
             <main role="main" className="col-lg-12 d-flex text-center">
