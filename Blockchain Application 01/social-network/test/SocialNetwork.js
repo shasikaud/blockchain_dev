@@ -64,9 +64,75 @@ contract('SocialNetwork', ([deployer, author, tipper]) => {    //these correspon
 
         })
 
-        it ('allows users to tip posts', async () => {
+        // it ('allows users to tip posts', async () => {
 
-        })
+        //     //track author balances before tipping
+        //     let balanceAuthorOld
+        //     balanceAuthorOld = await web3.eth.getBalance(author)
+        //     balanceAuthorOld = new web3.utils.BN(balanceAuthorOld)   //BIG NUMBER CONV
+
+        //     result = await socialNetwork.tipPost(postCount, { from: tipper, value: web3.utils.toWei('1','Ether')} )
+
+        //     const event = result.logs[0].args
+        //     assert.equal(event.id.toNumber(), postCount.toNumber(), 'ID IS CORRECT')
+        //     //assert.equal(event.content, "This is my first test post", 'POST CONTENT IS CORRECT')
+        //     assert.equal(event.tipAmount, '1000000000000000000', 'TIP AMOUNT IS CORRECT')
+        //     assert.equal(event.author, author, 'AUTHOR IS CORRECT')
+
+        //     ////track author balances after tipping
+        //     let balanceAuthorNew
+        //     balanceAuthorNew = await web3.eth.getBalance(author)
+        //     balanceAuthorNew = new web3.utils.BN(balanceAuthorNew)   //BIG NUMBER CONV
+
+        //     let tipAmount
+        //     tipAmount = web3.utils.toWei('1','Ether')
+        //     tipAmount = new web3.utils.BN(tipAmount)
+
+        //     const expectedBalance = balanceAuthorOld.add(tipAmount)
+        //     assert.equal(balanceAuthorNew.toString(), expectedBalance.toString(), "TIPPED CORRECTLY")
+
+        // })
         
     })
+
+
+    describe('tipping', async () => {
+
+        it ('allows users to tip posts', async () => {
+
+            //track author balances before tipping
+            let balanceAuthorOld
+            balanceAuthorOld = await web3.eth.getBalance(author)
+            balanceAuthorOld = new web3.utils.BN(balanceAuthorOld)   //BIG NUMBER CONV
+
+            let result
+            result = await socialNetwork.tipPost(1, { from: tipper, value: web3.utils.toWei('1','Ether')} )
+
+            const event = result.logs[0].args
+            assert.equal(event.id.toNumber(), 1, 'ID IS CORRECT')
+            //assert.equal(event.content, "This is my first test post", 'POST CONTENT IS CORRECT')
+            assert.equal(event.tipAmount, '1000000000000000000', 'TIP AMOUNT IS CORRECT')
+            assert.equal(event.author, author, 'AUTHOR IS CORRECT')
+
+            ////track author balances after tipping
+            let balanceAuthorNew
+            balanceAuthorNew = await web3.eth.getBalance(author)
+            balanceAuthorNew = new web3.utils.BN(balanceAuthorNew)   //BIG NUMBER CONV
+
+            let tipAmount
+            tipAmount = web3.utils.toWei('1','Ether')
+            tipAmount = new web3.utils.BN(tipAmount)
+
+            const expectedBalance = balanceAuthorOld.add(tipAmount)
+            assert.equal(balanceAuthorNew.toString(), expectedBalance.toString(), "TIPPED CORRECTLY")
+
+
+            //FAIL CASE :: TIP FOR A POST THAT DOES NOT EXISTS
+            await socialNetwork.tipPost(99, { from: tipper, value: web3.utils.toWei('1','Ether')} ).should.be.rejected
+            
+
+        })
+    })
+
+
 })
