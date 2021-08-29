@@ -32,4 +32,6 @@ contract SocialNetwork {
         emit PostCreated(postCount, _content, 0, msg.sender); //trigger event
     }
 
+    function tipPost()
+
 }

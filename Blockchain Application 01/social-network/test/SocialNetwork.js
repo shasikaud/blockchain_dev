@@ -7,7 +7,7 @@ require('chai')
     .use(require('chai-as-promised'))
     .should()
 
-contract('SocialNetwork', ([deployer, author, tipper]) => {
+contract('SocialNetwork', ([deployer, author, tipper]) => {    //these corresponds to the first 3 acs in ganache
     let socialNetwork
 
     before(async () => {
@@ -34,13 +34,17 @@ contract('SocialNetwork', ([deployer, author, tipper]) => {
 
         let result, postCount;
 
-        it ('creates posts', async () => {
+        before (async () => {
             result = await socialNetwork.createPost("This is my first test post", {from:author})
             postCount = await socialNetwork.postCount()
+        })
+
+        it ('creates posts', async () => {
+            
             assert.equal(postCount, 1)
             //console.log(result)
 
-            const event = result.logs[0].args
+            const event = result.logs[0].args    //results contains the events emitted
             assert.equal(event.id.toNumber(), postCount.toNumber(), 'POST ID IS CORRECT')
             assert.equal(event.content, "This is my first test post", 'POST CONTENT IS CORRECT')
             assert.equal(event.tipAmount, '0', 'TIP AMOUNT IS CORRECT')
@@ -52,6 +56,11 @@ contract('SocialNetwork', ([deployer, author, tipper]) => {
         })
 
         it ('lists posts', async () => {
+            const post = await socialNetwork.posts(postCount)     //posts -> mapping holding the posts
+            assert.equal(post.id.toNumber(), postCount.toNumber(), 'POST ID IS CORRECT')
+            assert.equal(post.content, "This is my first test post", 'POST CONTENT IS CORRECT')
+            assert.equal(post.tipAmount, '0', 'TIP AMOUNT IS CORRECT')
+            assert.equal(post.author, author, 'AUTHOR IS CORRECT')
 
         })
 
