@@ -1,8 +1,45 @@
 import React, { Component } from 'react';
+import Web3 from 'web3';
 import logo from '../logo.png';
 import './App.css';
 
 class App extends Component {
+
+  //wait for this to happen at DOM before anything else
+  async componentWillMount() {
+    await this.loadWeb3()
+    await this.loadBlockchainData()
+  }
+
+  async loadWeb3() {
+    if (window.ethereum) {
+      window.web3 = new Web3(window.ethereum)
+      await window.ethereum.enable()
+    }
+    else if (window.web3) {
+      window.web3 = new Web3(window.web3.currentProvider)
+    }
+    else {
+      window.alert("NON ETHEREUM BROWSER DETECTED - TRY USING METAMASK!")
+    }
+  }
+
+  //get the ac details of the connected metamask ac
+  async loadBlockchainData() {
+    const web3 = window.web3
+    //load account
+    const accounts = await web3.eth.getAccounts()
+    console.log(accounts)
+    this.setState({account: accounts[0]})
+  }
+
+  constructor(props) {
+    super(props)
+    this.state = {
+      account: ''
+    }
+  }
+
   render() {
     return (
       <div>
@@ -15,6 +52,12 @@ class App extends Component {
           >
             Navigation Bar
           </a>
+          <li className="nav-item text-nowrap d-sm-none d-sm-block">
+            <small className="text-secondary">
+              <small id="account">{this.state.account}</small>
+            </small>
+          </li>
+
         </nav>
         <div className="container-fluid mt-5">
           <div className="row">
