@@ -7,12 +7,13 @@ require('chai')
     .use(require('chai-as-promised'))
     .should()
 
-contract('DappToken', (accounts) => {    //these corresponds to the first 3 acs in ganache
+contract('DappToken', accounts => {    //these corresponds to the first 3 acs in ganache
     let dappToken
 
     before(async () => {
         dappToken = await DappToken.deployed()
     })
+
 
     describe("deployment", async () => {
         it ('deploys successfully', async () => {
@@ -23,9 +24,13 @@ contract('DappToken', (accounts) => {    //these corresponds to the first 3 acs 
             assert.notEqual(address, undefined)
         })
 
-        it ('has a name', async () => {
+        it ('intialisation is correct', async () => {
             const name = await dappToken.name()
-            assert.equal(name, 'MINTING APPLICATION')
+            assert.equal(name, 'Dapp Token')
+            const symbol = await dappToken.symbol()
+            assert.equal(symbol, 'DAPP')
+            const decimals = await dappToken.decimals()
+            assert.equal(decimals, 18)
         })
 
     })
