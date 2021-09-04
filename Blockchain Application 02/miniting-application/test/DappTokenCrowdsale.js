@@ -1,5 +1,7 @@
 import ether from './helpers/ether';
 import EVMRevert from './helpers/EVMRevert';
+import latestTime from './helpers/latestTime';
+import { increaseTimeTo, duration } from './helpers/increaseTime';
 
 const { assert } = require('chai');
 const BigNumber = web3.BigNumber;
@@ -24,13 +26,25 @@ contract('DappTokenCrowdsale', ([_, wallet, investor1, investor2]) => {    //the
         this.rate = 500;  //500 tokens per 1 ETH
         this.wallet = wallet;
         this.cap = ether(100);  //set cap on the amount to be raised
+        this.openingTime = latestTime() + duration.weeks(1);  //crowdsale is going to open one week from now
+        this.closingTime = this.openingTime + duration.weeks(1);   // 1 week long crowdsale
         this.investorMinCap = ether(0.002);
         this.investorHardCap = ether(50);
 
-        this.crowdsale = await DappTokenCrowdsale.new(this.rate, this.wallet, this.token.address, this.cap);
+        this.crowdsale = await DappTokenCrowdsale.new(
+            this.rate, 
+            this.wallet, 
+            this.token.address, 
+            this.cap,
+            this.openingTime,
+            this.closingTime
+            );
         
         //transfer ownership to the crowdsale (cannot mint without the ownership)
         await this.token.transferOwnership(this.crowdsale.address);
+
+        //advance time
+        await increaseTimeTo(this.openingTime + 1);
     });
 
 
@@ -61,6 +75,13 @@ contract('DappTokenCrowdsale', ([_, wallet, investor1, investor2]) => {    //the
         it ('has the correct hardcap', async function () {
             const cap = await this.crowdsale.cap();
             cap.should.be.bignumber.equal(this.cap);
+        });
+    });
+
+    describe("timed crowdsale", function () {
+        it ('is open', async function () {
+            const isClosed = await this.crowdsale.hasClosed();
+            isClosed.should.be.false;    
         });
     });
 
