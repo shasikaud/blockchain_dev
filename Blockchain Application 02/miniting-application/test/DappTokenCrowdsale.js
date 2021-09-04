@@ -15,7 +15,7 @@ require('chai')
     .use(require('chai-bignumber')(BigNumber))
     .should()
 
-contract('DappTokenCrowdsale', ([_, wallet, investor1, investor2]) => {    //these corresponds to the first 3 acs in ganache
+contract('DappTokenCrowdsale', ([_, wallet, investor1, investor2, investor3]) => {    //these corresponds to the first 3 acs in ganache
 
     beforeEach(async function () {
 
@@ -24,7 +24,7 @@ contract('DappTokenCrowdsale', ([_, wallet, investor1, investor2]) => {    //the
         
         //crwodsale configuration
         this.rate = 500;  //500 tokens per 1 ETH
-        this.wallet = wallet;
+        this.wallet = wallet;  //address where collected funds will be forwarded to
         this.cap = ether(100);  //set cap on the amount to be raised
         this.openingTime = latestTime() + duration.weeks(1);  //crowdsale is going to open one week from now
         this.closingTime = this.openingTime + duration.weeks(1);   // 1 week long crowdsale
@@ -85,6 +85,12 @@ contract('DappTokenCrowdsale', ([_, wallet, investor1, investor2]) => {    //the
         it ('is open', async function () {
             const isClosed = await this.crowdsale.hasClosed();
             isClosed.should.be.false;    
+        });
+    });
+
+    describe("whitelisted crowdsale", function () {
+        it ('rejects contributions from non-whitelisted', async function () {
+            await this.crowdsale.buyTokens(investor3, { value: ether(1), from: investor3}).should.be.rejectedWith(EVMRevert); 
         });
     });
 
