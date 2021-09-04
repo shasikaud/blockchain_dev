@@ -22,7 +22,8 @@ contract('DappTokenCrowdsale', ([_, wallet, investor1, investor2]) => {    //the
         //crwodsale configuration
         this.rate = 500;  //500 tokens per 1 ETH
         this.wallet = wallet;
-        this.crowdsale = await DappTokenCrowdsale.new(this.rate, this.wallet, this.token.address);
+        this.cap = ether(100);  //set cap on the amount to be raised
+        this.crowdsale = await DappTokenCrowdsale.new(this.rate, this.wallet, this.token.address, this.cap);
         
         //transfer ownership to the crowdsale (cannot mint without the ownership)
         await this.token.transferOwnership(this.crowdsale.address);
@@ -49,6 +50,13 @@ contract('DappTokenCrowdsale', ([_, wallet, investor1, investor2]) => {    //the
             await this.crowdsale.sendTransaction({ value: ether(1), from: investor1});
             const newTotalSupply = await this.token.totalSupply();
             assert.isTrue(newTotalSupply > originalTotalSupply);
+        });
+    });
+
+    describe("capped crowdsale", function () {
+        it ('has the correct hardcap', async function () {
+            const cap = await this.crowdsale.cap();
+            cap.should.be.bignumber.equal(this.cap);
         });
     });
 
