@@ -98,11 +98,20 @@ contract('DappTokenCrowdsale', ([_, wallet, investor1, investor2]) => {    //the
         describe ('contribution is more than than max cap', async function () {
             it ('rejects the transaction', async function() {
                 const value1 = ether(2);
-                await this.crowdsale.buyTokens(investor2, { value: value1, from: investor2}).should.be.fulfilled;
+                await this.crowdsale.buyTokens(investor2, { value: value1, from: investor2});
                 
                 // now this should be rejected
                 const value2 = ether(4); //wei
                 await this.crowdsale.buyTokens(investor2, { value: value2, from: investor2}).should.be.rejectedWith(EVMRevert);
+            });     
+        });
+
+        describe ('contribution is within the range', async function () {
+            it ('transaction succeeds & updates the contribution mapping', async function() {
+                const value = ether(2);
+                await this.crowdsale.buyTokens(investor2, { value: value, from: investor2}).should.be.fulfilled;
+                const contribution = await this.crowdsale.getUserContribution(investor2);
+                contribution.should.be.bignumber.equal(value);
             });     
         });
 
