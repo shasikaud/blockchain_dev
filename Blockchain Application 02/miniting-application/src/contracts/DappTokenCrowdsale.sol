@@ -4,8 +4,9 @@ import "openzeppelin-solidity/contracts/crowdsale/Crowdsale.sol";
 import "openzeppelin-solidity/contracts/crowdsale/emission/MintedCrowdsale.sol";
 import "openzeppelin-solidity/contracts/crowdsale/validation/CappedCrowdsale.sol";
 import "openzeppelin-solidity/contracts/crowdsale/validation/TimedCrowdsale.sol";
+import "openzeppelin-solidity/contracts/crowdsale/validation/WhitelistedCrowdsale.sol";
 
-contract DappTokenCrowdsale is Crowdsale, MintedCrowdsale, CappedCrowdsale, TimedCrowdsale {
+contract DappTokenCrowdsale is Crowdsale, MintedCrowdsale, CappedCrowdsale, TimedCrowdsale, WhitelistedCrowdsale {
 
     //Minimum investor contribution -> 0.002 Ether
     //Maximum investor contribution -> 5 Ether

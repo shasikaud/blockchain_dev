@@ -43,6 +43,9 @@ contract('DappTokenCrowdsale', ([_, wallet, investor1, investor2]) => {    //the
         //transfer ownership to the crowdsale (cannot mint without the ownership)
         await this.token.transferOwnership(this.crowdsale.address);
 
+        //add investors to whitelist
+        await this.crowdsale.addManyToWhitelist([investor1, investor2]);  
+
         //advance time
         await increaseTimeTo(this.openingTime + 1);
     });
