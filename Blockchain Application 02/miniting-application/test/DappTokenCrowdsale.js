@@ -8,6 +8,7 @@ const BigNumber = web3.BigNumber;
 
 const DappToken = artifacts.require("./DappToken.sol");
 const DappTokenCrowdsale = artifacts.require("./DappTokenCrowdsale.sol");
+const RefundVault = artifacts.require('./RefundVault');
 
 
 require('chai')
@@ -28,6 +29,8 @@ contract('DappTokenCrowdsale', ([_, wallet, investor1, investor2, investor3]) =>
         this.cap = ether(100);  //set cap on the amount to be raised
         this.openingTime = latestTime() + duration.weeks(1);  //crowdsale is going to open one week from now
         this.closingTime = this.openingTime + duration.weeks(1);   // 1 week long crowdsale
+        this.goal = ether(50);
+        
         this.investorMinCap = ether(0.002);
         this.investorHardCap = ether(50);
 
@@ -37,7 +40,8 @@ contract('DappTokenCrowdsale', ([_, wallet, investor1, investor2, investor3]) =>
             this.token.address, 
             this.cap,
             this.openingTime,
-            this.closingTime
+            this.closingTime,
+            this.goal
             );
         
         //transfer ownership to the crowdsale (cannot mint without the ownership)
@@ -45,6 +49,10 @@ contract('DappTokenCrowdsale', ([_, wallet, investor1, investor2, investor3]) =>
 
         //add investors to whitelist
         await this.crowdsale.addManyToWhitelist([investor1, investor2]);  
+
+        //track refund vault
+        this.vaultAddress = await this.crowdsale.vault();
+        this.vault = RefundVault.at(this.vaultAddress);
 
         //advance time
         await increaseTimeTo(this.openingTime + 1);
@@ -91,6 +99,18 @@ contract('DappTokenCrowdsale', ([_, wallet, investor1, investor2, investor3]) =>
     describe("whitelisted crowdsale", function () {
         it ('rejects contributions from non-whitelisted', async function () {
             await this.crowdsale.buyTokens(investor3, { value: ether(1), from: investor3}).should.be.rejectedWith(EVMRevert); 
+        });
+    });
+
+    describe("refundable crowdsale", function () {
+        beforeEach(async function () {
+            await this.crowdsale.buyTokens(investor1, { value: ether(1), from: investor1}); 
+        });
+        
+        describe("refundable crowdsale", function () {
+            it ('prevents the investor from claiming refund', async function () {
+                await this.vault.refund(investor1, { value: ether(1), from: investor1}).should.be.rejectedWith(EVMRevert); 
+            });
         });
     });
 
