@@ -76,12 +76,36 @@ contract('DappTokenCrowdsale', ([_, wallet, investor1, investor2]) => {    //the
     });
 
     describe("buy tokens", function () {
+
         describe ('contribution is less than min cap', async function () {
             it ('rejects the transaction', async function() {
-                const value = this.investorMinCap - 0.001;
-                //await this.crowdsale.buyTokens(investor2, { value: value, from: investor2}).should.be.rejected;
+                const value = this.investorMinCap - 1;
+                await this.crowdsale.buyTokens(investor2, { value: value, from: investor2}).should.be.rejectedWith(EVMRevert); 
             });     
         });
+
+        describe ('contribution is more than than min cap', async function () {
+            it ('accepts the transaction', async function() {
+                const value1 = ether(0.5);
+                await this.crowdsale.buyTokens(investor2, { value: value1, from: investor2}).should.be.fulfilled;
+                
+                // now this should be accpeted as the investor2 has already invested more than the min cap
+                const value2 = ether(0.0001); //wei
+                await this.crowdsale.buyTokens(investor2, { value: value2, from: investor2}).should.be.fulfilled;
+            });     
+        });
+
+        describe ('contribution is more than than max cap', async function () {
+            it ('rejects the transaction', async function() {
+                const value1 = ether(2);
+                await this.crowdsale.buyTokens(investor2, { value: value1, from: investor2}).should.be.fulfilled;
+                
+                // now this should be rejected
+                const value2 = ether(4); //wei
+                await this.crowdsale.buyTokens(investor2, { value: value2, from: investor2}).should.be.rejectedWith(EVMRevert);
+            });     
+        });
+
     });
 
 });

@@ -7,9 +7,9 @@ import "openzeppelin-solidity/contracts/crowdsale/validation/CappedCrowdsale.sol
 contract DappTokenCrowdsale is Crowdsale, MintedCrowdsale, CappedCrowdsale {
 
     //Minimum investor contribution -> 0.002 Ether
-    //Maximum investor contribution -> 50 Ether
+    //Maximum investor contribution -> 5 Ether
     uint256 public investorMinCap = 2000000000000000; // 0.002 ether
-    uint256 public investorHardCap = 50000000000000000000; // 50 ether
+    uint256 public investorHardCap = 5000000000000000000; // 5 ether
     mapping(address => uint256) public contributions;
 
     constructor (uint256 _rate, address _walllet, ERC20 _token, uint256 _cap) 
