@@ -9,6 +9,7 @@ const DappTokenCrowdsale = artifacts.require("./DappTokenCrowdsale.sol");
 
 require('chai')
     .use(require('chai-as-promised'))
+    .use(require('chai-bignumber')(BigNumber))
     .should()
 
 contract('DappTokenCrowdsale', ([_, wallet, investor1, investor2]) => {    //these corresponds to the first 3 acs in ganache
@@ -42,13 +43,24 @@ contract('DappTokenCrowdsale', ([_, wallet, investor1, investor2]) => {    //the
         });
     });
 
+    describe("minted crowdsale", function () {
+        it ('mints tokens after purchase', async function () {
+            const originalTotalSupply = await this.token.totalSupply();
+            await this.crowdsale.sendTransaction({ value: ether(1), from: investor1});
+            const newTotalSupply = await this.token.totalSupply();
+            assert.isTrue(newTotalSupply > originalTotalSupply);
+        });
+    });
+
     describe("accepting payments", function () {
         it ('accept payments', async function () {
             const value = ether(1);
-            await this.crowdsale.sendTransaction({ value: value, from: investor1})
+            const purchaser = investor2;
+            await this.crowdsale.sendTransaction({ value: value, from: investor1}).should.be.fulfilled;
+
+            //buy tokens by purchaser, on behalf of investor1
+            await this.crowdsale.buyTokens(investor1, { value: value, from: purchaser}).should.be.fulfilled;
         });
-
     });
-
 
 });
