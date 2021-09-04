@@ -22,6 +22,9 @@ contract('DappTokenCrowdsale', ([_, wallet, investor1, investor2]) => {    //the
         this.rate = 500;  //500 tokens per 1 ETH
         this.wallet = wallet;
         this.crowdsale = await DappTokenCrowdsale.new(this.rate, this.wallet, this.token.address);
+        
+        //transfer ownership to the crowdsale (cannot mint without the ownership)
+        await this.token.transferOwnership(this.crowdsale.address);
     });
 
 
