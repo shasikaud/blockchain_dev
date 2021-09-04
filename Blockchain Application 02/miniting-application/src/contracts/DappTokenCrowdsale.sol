@@ -25,6 +25,7 @@ contract DappTokenCrowdsale is Crowdsale, MintedCrowdsale, CappedCrowdsale {
         return contributions[_beneficiary];
     }
 
+    //internal override function
     function _preValidatePurchase (address _beneficiary, uint256 _weiAmount) internal
     {
         super._preValidatePurchase(_beneficiary, _weiAmount);  //crowdsale func
