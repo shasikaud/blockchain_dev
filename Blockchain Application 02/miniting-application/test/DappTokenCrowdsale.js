@@ -1,4 +1,5 @@
 import ether from './helpers/ether';
+import EVMRevert from './helpers/EVMRevert';
 
 const { assert } = require('chai');
 const BigNumber = web3.BigNumber;
@@ -23,6 +24,9 @@ contract('DappTokenCrowdsale', ([_, wallet, investor1, investor2]) => {    //the
         this.rate = 500;  //500 tokens per 1 ETH
         this.wallet = wallet;
         this.cap = ether(100);  //set cap on the amount to be raised
+        this.investorMinCap = ether(0.002);
+        this.investorHardCap = ether(50);
+
         this.crowdsale = await DappTokenCrowdsale.new(this.rate, this.wallet, this.token.address, this.cap);
         
         //transfer ownership to the crowdsale (cannot mint without the ownership)
@@ -68,6 +72,15 @@ contract('DappTokenCrowdsale', ([_, wallet, investor1, investor2]) => {    //the
 
             //buy tokens by purchaser, on behalf of investor1
             await this.crowdsale.buyTokens(investor1, { value: value, from: purchaser}).should.be.fulfilled;
+        });
+    });
+
+    describe("buy tokens", function () {
+        describe ('contribution is less than min cap', async function () {
+            it ('rejects the transaction', async function() {
+                const value = this.investorMinCap - 0.001;
+                //await this.crowdsale.buyTokens(investor2, { value: value, from: investor2}).should.be.rejected;
+            });     
         });
     });
 
