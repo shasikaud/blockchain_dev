@@ -29,6 +29,8 @@ async function logout() {
 async function flip(side) {
     let amount = document.getElementById("amount").value;
     alert(side + ' ' + amount);
+    window.web3 = await Moralis.Web3.enable();
+    let contractInstance = new web3.eth.Contract(window.abi, '0xCE657Ea3DAe9246F0f5b11BE2118D1108249d971');
 }
 
 document.getElementById("login_button").onclick = login;
