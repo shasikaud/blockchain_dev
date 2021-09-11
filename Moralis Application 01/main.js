@@ -17,6 +17,7 @@ async function login() {
     console.log(user);
     document.getElementById("login_button").style.display = "none";
     document.getElementById("game").style.display = "block";
+    document.getElementById("account").innerHTML = ethereum.selectedAddress;
 }
 
 async function logout() {
@@ -28,9 +29,19 @@ async function logout() {
 
 async function flip(side) {
     let amount = document.getElementById("amount").value;
-    alert(side + ' ' + amount);
     window.web3 = await Moralis.Web3.enable();
-    let contractInstance = new web3.eth.Contract(window.abi, '0xCE657Ea3DAe9246F0f5b11BE2118D1108249d971');
+    let contractInstance = new web3.eth.Contract(window.abi, '0xCE657Ea3DAe9246F0f5b11BE2118D1108249d971')
+    contractInstance.methods.flip(side == "heads" ? 0 : 1).send({ value: amount, from: ethereum.selectedAddress})
+    .on('receipt', function(receipt) {
+        console.log(receipt);
+        if(receipt.events.bet.returnValues.win){
+            alert("You Won!");
+        }
+        else{
+            alert("You Lost!");
+        }
+    })
+
 }
 
 document.getElementById("login_button").onclick = login;
