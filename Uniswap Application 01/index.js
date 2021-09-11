@@ -8,6 +8,7 @@ const init = async () => {
     const weth = WETH[chainId];
     const pair = await Fetcher.fetchPairData(dai, weth);
     const route = new Route([pair],weth);
+    console.log(route.midPrice.toSignificant(6));
     console.log(route.midPrice.invert().toSignificant(6));
 }
 
