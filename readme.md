@@ -1,3 +1,4 @@
+# Smart contracts for an ICO using solidity
 ## Bitcoin
 1. Native token - BTC
 2. Use cases -  store of value
